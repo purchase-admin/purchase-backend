@@ -26,7 +26,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <encoding>UTF-8</encoding>
         <purchase.version>1.0.0</purchase.version>
-        <flowable.version>6.6.0</flowable.version>
+        <flowable.version>6.8.0</flowable.version>
         <java.version>1.8</java.version>
         <bitwalker.version>1.21</bitwalker.version>
         <swagger.version>2.9.2</swagger.version>

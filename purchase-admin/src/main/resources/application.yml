@@ -234,4 +234,4 @@ purchase:
 server:
   port: 8020
 flowable:
-  database-schema-update: false
+  database-schema-update: true
