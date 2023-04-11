@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.execute.mapper.AgencyPurchaseMapper">
+
+    <resultMap type="cn.luckyh.purchase.execute.domain.AgencyPurchase" id="AgencyPurchaseResult">
+        <result property="id" column="id"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="chooseMoney" column="choose_money"/>
+        <result property="tenderAnnouncement" column="tender_announcement"/>
+        <result property="tenderFile" column="tender_file"/>
+        <result property="supplierSignIn" column="supplier_sign_in"/>
+        <result property="supplierBidFile" column="supplier_bid_file"/>
+        <result property="judgingSignIn" column="judging_sign_in"/>
+        <result property="judgingGrade" column="judging_grade"/>
+    </resultMap>
+
+    <sql id="selectAgencyPurchaseVo">
+        select id,
+               supplier_id,
+               task_id,
+               choose_money,
+               tender_announcement,
+               tender_file,
+               supplier_sign_in,
+               supplier_bid_file,
+               judging_sign_in,
+               judging_grade
+        from agency_purchase
+    </sql>
+
+    <select id="selectAgencyPurchaseList" parameterType="cn.luckyh.purchase.execute.domain.AgencyPurchase"
+            resultMap="AgencyPurchaseResult">
+        select ap.*,s.company_name as supplierName from agency_purchase ap
+        left join supplier s on ap.supplier_id = s.id
+        <where>
+            <if test="supplierId != null  and supplierId != ''">
+                and ap.supplier_id = #{supplierId}
+            </if>
+            <if test="taskId != null  and taskId != ''">
+                and ap.task_id = #{taskId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectAgencyPurchaseById" parameterType="java.lang.String"
+            resultType="cn.luckyh.purchase.execute.vo.AgencyPurchaseVo">
+        select ap.*,
+               sfs1.name tender_announcement_name,
+               sfs2.name tender_file_name,
+               sfs3.name supplier_sign_in_name,
+               sfs4.name supplier_bid_file_name,
+               sfs5.name judging_sign_in_name,
+               sfs5.name judging_sign_in_name,
+               sfs6.name judging_grade_name
+        from agency_purchase ap
+                 left join sys_file_storage sfs1 on ap.tender_announcement = sfs1.id
+                 left join sys_file_storage sfs2 on ap.tender_file = sfs2.id
+                 left join sys_file_storage sfs3 on ap.supplier_sign_in = sfs3.id
+                 left join sys_file_storage sfs4 on ap.supplier_bid_file = sfs4.id
+                 left join sys_file_storage sfs5 on ap.judging_sign_in = sfs5.id
+                 left join sys_file_storage sfs6 on ap.judging_grade = sfs6.id
+        where ap.id = #{id}
+    </select>
+
+    <insert id="insertAgencyPurchase" parameterType="cn.luckyh.purchase.execute.domain.AgencyPurchase">
+        insert into agency_purchase
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="supplierId != null">supplier_id,
+            </if>
+            <if test="taskId != null">task_id,
+            </if>
+            <if test="chooseMoney != null">choose_money,
+            </if>
+            <if test="tenderAnnouncement != null">tender_announcement,
+            </if>
+            <if test="tenderFile != null">tender_file,
+            </if>
+            <if test="supplierSignIn != null">supplier_sign_in,
+            </if>
+            <if test="supplierBidFile != null">supplier_bid_file,
+            </if>
+            <if test="judgingSignIn != null">judging_sign_in,
+            </if>
+            <if test="judgingGrade != null">judging_grade,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="supplierId != null">#{supplierId},
+            </if>
+            <if test="taskId != null">#{taskId},
+            </if>
+            <if test="chooseMoney != null">#{chooseMoney},
+            </if>
+            <if test="tenderAnnouncement != null">#{tenderAnnouncement},
+            </if>
+            <if test="tenderFile != null">#{tenderFile},
+            </if>
+            <if test="supplierSignIn != null">#{supplierSignIn},
+            </if>
+            <if test="supplierBidFile != null">#{supplierBidFile},
+            </if>
+            <if test="judgingSignIn != null">#{judgingSignIn},
+            </if>
+            <if test="judgingGrade != null">#{judgingGrade},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateAgencyPurchase" parameterType="cn.luckyh.purchase.execute.domain.AgencyPurchase">
+        update agency_purchase
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="supplierId != null">supplier_id =
+                #{supplierId},
+            </if>
+            <if test="taskId != null">task_id =
+                #{taskId},
+            </if>
+            <if test="chooseMoney != null">choose_money =
+                #{chooseMoney},
+            </if>
+            <if test="tenderAnnouncement != null">tender_announcement =
+                #{tenderAnnouncement},
+            </if>
+            <if test="tenderFile != null">tender_file =
+                #{tenderFile},
+            </if>
+            <if test="supplierSignIn != null">supplier_sign_in =
+                #{supplierSignIn},
+            </if>
+            <if test="supplierBidFile != null">supplier_bid_file =
+                #{supplierBidFile},
+            </if>
+            <if test="judgingSignIn != null">judging_sign_in =
+                #{judgingSignIn},
+            </if>
+            <if test="judgingGrade != null">judging_grade =
+                #{judgingGrade},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteAgencyPurchaseById" parameterType="java.lang.String">
+        delete
+        from agency_purchase
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteAgencyPurchaseByIds" parameterType="java.lang.String">
+        delete from agency_purchase where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

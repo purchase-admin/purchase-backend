@@ -1,0 +1,49 @@
+{
+  "properties": [
+    {
+      "name": "token.header",
+      "type": "java.lang.String",
+      "description": "Description for token.header."
+    },
+    {
+      "name": "token.secret",
+      "type": "java.lang.String",
+      "description": "Description for token.secret."
+    },
+    {
+      "name": "token.expireTime",
+      "type": "java.lang.String",
+      "description": "Description for token.expireTime."
+    },
+    {
+      "name": "purchase.profile",
+      "type": "java.lang.String",
+      "description": "文件存储路径."
+    },
+    {
+      "name": "purchase.addressEnabled",
+      "type": "java.lang.String",
+      "description": "获取ip地址开关."
+    },
+    {
+      "name": "purchase.captchaEnabled",
+      "type": "java.lang.Boolean",
+      "description": "是否启用验证码."
+    }
+  ],
+  "hints": [
+    {
+      "name": "purchase.captchaType",
+      "values": [
+        {
+          "value": "math",
+          "description": "数学运算"
+        },
+        {
+          "value": "char",
+          "description": "字符串"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.luckyh</groupId>
+    <artifactId>purchase</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>purchase</name>
+    <description>采购系统</description>
+
+    <modules>
+        <module>purchase-admin</module>
+        <module>purchase-framework</module>
+        <module>purchase-modules</module>
+    </modules>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <encoding>UTF-8</encoding>
+        <purchase.version>1.0.0</purchase.version>
+        <flowable.version>6.6.0</flowable.version>
+        <java.version>1.8</java.version>
+        <bitwalker.version>1.21</bitwalker.version>
+        <swagger.version>2.9.2</swagger.version>
+        <mybatis.version>3.5.6</mybatis.version>
+        <kaptcha.version>2.3.2</kaptcha.version>
+        <pagehelper.version>5.3.2</pagehelper.version>
+        <mp.version>3.5.2</mp.version>
+        <admin.version>2.7.6</admin.version>
+        <hutool.version>5.6.7</hutool.version>
+        <fastjson.version>1.2.75</fastjson.version>
+        <oshi.version>6.3.0</oshi.version>
+        <jna.version>5.7.0</jna.version>
+        <commons.io.version>2.8.0</commons.io.version>
+        <commons.fileupload.version>1.4</commons.fileupload.version>
+        <commons.collections.version>3.2.2</commons.collections.version>
+        <poi.version>4.1.2</poi.version>
+        <velocity.version>1.7</velocity.version>
+        <jwt.version>0.9.1</jwt.version>
+    </properties>
+
+
+    <!-- 依赖声明 -->
+    <dependencyManagement>
+        <dependencies>
+
+            <!-- springboot版本-->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.4.6</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+
+
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-server</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.codecentric</groupId>
+                <artifactId>spring-boot-admin-starter-client</artifactId>
+                <version>${admin.version}</version>
+            </dependency>
+            <!-- 解析客户端操作系统、浏览器等 -->
+            <dependency>
+                <groupId>eu.bitwalker</groupId>
+                <artifactId>UserAgentUtils</artifactId>
+                <version>${bitwalker.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.github.pagehelper</groupId>
+                <artifactId>pagehelper</artifactId>
+                <version>${pagehelper.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>mybatis-plus-boot-starter</artifactId>
+                <version>${mp.version}</version>
+            </dependency>
+
+            <!-- 获取系统信息 -->
+            <dependency>
+                <groupId>com.github.oshi</groupId>
+                <artifactId>oshi-core</artifactId>
+                <version>${oshi.version}</version>
+            </dependency>
+
+
+            <!-- swagger2-->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger2</artifactId>
+                <version>${swagger.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.swagger</groupId>
+                        <artifactId>swagger-models</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- swagger2-UI-->
+            <dependency>
+                <groupId>io.springfox</groupId>
+                <artifactId>springfox-swagger-ui</artifactId>
+                <version>${swagger.version}</version>
+            </dependency>
+
+            <!--文件上传工具类 -->
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>${commons.fileupload.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-io</groupId>
+                        <artifactId>commons-io</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons.io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-all</artifactId>
+                <version>${hutool.version}</version>
+            </dependency>
+
+
+            <!-- excel工具 -->
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <!--velocity代码生成使用模板 -->
+            <dependency>
+                <groupId>org.apache.velocity</groupId>
+                <artifactId>velocity</artifactId>
+                <version>${velocity.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-collections</groupId>
+                        <artifactId>commons-collections</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <!-- collections工具类 -->
+            <dependency>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+                <version>${commons.collections.version}</version>
+            </dependency>
+
+            <!-- 阿里JSON解析器 -->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>fastjson</artifactId>
+                <version>${fastjson.version}</version>
+            </dependency>
+
+            <!--Token生成与解析-->
+            <dependency>
+                <groupId>io.jsonwebtoken</groupId>
+                <artifactId>jjwt</artifactId>
+                <version>${jwt.version}</version>
+            </dependency>
+
+            <!--            <dependency>-->
+            <!--                <groupId>cn.hutool</groupId>-->
+            <!--                <artifactId>hutool-all</artifactId>-->
+            <!--                <version>5.5.9</version>-->
+            <!--            </dependency>-->
+
+            <!--验证码 -->
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
+            </dependency>
+
+            <!-- 核心模块-->
+            <dependency>
+                <groupId>cn.luckyh</groupId>
+                <artifactId>purchase-framework</artifactId>
+                <version>${purchase.version}</version>
+            </dependency>
+
+            <!-- 代码生成-->
+            <dependency>
+                <groupId>cn.luckyh</groupId>
+                <artifactId>purchase-generator</artifactId>
+                <version>${purchase.version}</version>
+            </dependency>
+
+            <!-- 预算模块-->
+            <dependency>
+                <groupId>cn.luckyh</groupId>
+                <artifactId>purchase-budget</artifactId>
+                <version>${purchase.version}</version>
+            </dependency>
+
+            <!-- 采购模块-->
+            <dependency>
+                <groupId>cn.luckyh</groupId>
+                <artifactId>purchase-purchase</artifactId>
+                <version>${purchase.version}</version>
+            </dependency>
+
+            <!-- 定时任务-->
+            <!--            <dependency>-->
+            <!--                <groupId>cn.luckyh</groupId>-->
+            <!--                <artifactId>purchase-quartz</artifactId>-->
+            <!--                <version>${purchase.version}</version>-->
+            <!--            </dependency>-->
+            <!-- 供应商模块-->
+            <dependency>
+                <groupId>cn.luckyh</groupId>
+                <artifactId>purchase-supplier</artifactId>
+                <version>${purchase.version}</version>
+            </dependency>
+
+            <!-- 工作流-->
+            <dependency>
+                <groupId>cn.luckyh</groupId>
+                <artifactId>purchase-workflow</artifactId>
+                <version>${purchase.version}</version>
+            </dependency>
+
+            <!-- 第三方集成-->
+            <dependency>
+                <groupId>cn.luckyh</groupId>
+                <artifactId>purchase-third</artifactId>
+                <version>${purchase.version}</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+    <profiles>
+        <profile>
+            <id>quartz</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <dependencyManagement>
+                <!-- 定时任务-->
+                <dependencies>
+                    <dependency>
+                        <groupId>cn.luckyh</groupId>
+                        <artifactId>purchase-quartz</artifactId>
+                        <version>${purchase.version}</version>
+                    </dependency>
+                </dependencies>
+            </dependencyManagement>
+        </profile>
+    </profiles>
+
+    <repositories>
+        <repository>
+            <id>Nexus</id>
+            <name>Esxi</name>
+            <url>http://172.17.150.114/repository/maven-public//</url>
+        </repository>
+    </repositories>
+
+</project>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.luckyh.purchase.budget.mapper.BudgetSummaryMapper">
+    <select id="selectSummary" resultType="cn.luckyh.purchase.budget.vo.BudgetSummaryVo">
+        select bs.*,
+        if(ahp.END_TIME_ IS NULL, sysu.nick_name, '') as assignee,
+        if(ahp.END_TIME_ IS NULL, aht.NAME_, '结束') as taskName
+        from budget_summary bs
+        left join (
+        select max(END_TIME_),PROC_INST_ID_,TASK_DEF_KEY_,NAME_,ASSIGNEE_ from act_hi_taskinst aht group by
+        PROC_INST_ID_
+        ) as aht on aht.PROC_INST_ID_=bs.proc_id
+        left join sys_user sysu on aht.ASSIGNEE_=sysu.user_name
+        left join act_hi_procinst ahp on aht.PROC_INST_ID_ = ahp.PROC_INST_ID_
+        where true
+        <if test="query.title != null  and query.title != ''">
+            and bs.title like concat('%', #{query.title}, '%')
+        </if>
+        <if test="query.year != null  and query.year != ''">
+            and bs.year like concat('%', #{query.year}, '%')
+        </if>
+        order by year
+
+    </select>
+</mapper>

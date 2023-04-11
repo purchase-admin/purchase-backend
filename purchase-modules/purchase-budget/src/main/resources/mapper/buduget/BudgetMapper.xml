@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.budget.mapper.BudgetMapper">
+
+    <resultMap type="cn.luckyh.purchase.budget.domain.Budget" id="BudgetResult">
+        <result property="id" column="id"/>
+        <result property="batchId" column="batch_id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="projectName" column="project_type_name"/>
+        <result property="budgetYear" column="budget_year"/>
+        <result property="batchYear" column="batch_year"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_Name"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="specification" column="specification"/>
+        <result property="moneyFrom" column="money_from"/>
+        <result property="budgetMoney" column="budget_money"/>
+        <result property="approveStatus" column="approve_status"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="restMoney" column="rest_money"/>
+        <result property="restNum" column="rest_num"/>
+        <result property="num" column="num" />
+    </resultMap>
+
+    <sql id="selectBudgetVo">
+        select b.*,d.dept_name,u.user_name,u.nick_name,p.project_type_name,bb.year as batch_year,
+       (ifnull(b.budget_money,0) - ifnull((select sum(pa.budget_cost) from purchase_apply_projects pa where pa.project_id = b.id group by pa.project_id),0)) as rest_money,
+       (ifnull(b.num,0) - ifnull((select sum(pa.num) from purchase_apply_projects pa where pa.project_id = b.id group by pa.project_id),0)) as rest_num
+        from budget b
+         left join sys_dept d on b.dept_id = d.dept_id
+         left join sys_user u on b.user_id = u.user_id
+         left join sys_project_type p on b.project_id = p.id
+         left join budget_batch bb on b.batch_id =  bb.id
+    </sql>
+
+    <select id="selectBudgetList" parameterType="cn.luckyh.purchase.budget.domain.Budget" resultMap="BudgetResult">
+        <include refid="selectBudgetVo"/>
+        <where>
+            <if test="batchId !=null and batchId != ''">
+                and batch_id = #{batchId}
+            </if>
+            <if test="projectId != null  and projectId != ''">
+                and project_id = #{projectId}
+            </if>
+            <if test="budgetYear != null  and budgetYear != ''">
+                and budget_year = #{budgetYear}
+            </if>
+            <if test="deptId != null ">
+                and b.dept_id = #{deptId}
+            </if>
+            <if test="userId != null  and userId != ''">
+                and user_id = #{userId}
+            </if>
+            <if test="nickName != null  and nickName != ''">
+                and u.nick_name like concat('%',#{nickName},'%')
+            </if>
+            <if test="specification != null  and specification != ''">
+                and specification like concat('%',#{specification},'%')
+            </if>
+            <if test="moneyFrom != null  and moneyFrom != ''">
+                and money_from = #{moneyFrom}
+            </if>
+            <if test="budgetMoney != null ">
+                and budget_money = #{budgetMoney}
+            </if>
+            <if test="approveStatus != null ">
+                and approve_status = #{approveStatus}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBudgetById" parameterType="java.lang.String"
+            resultMap="BudgetResult">
+        <include refid="selectBudgetVo"/>
+        where b.id = #{id}
+    </select>
+
+    <insert id="insertBudget" parameterType="cn.luckyh.purchase.budget.domain.Budget">
+        insert into budget
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="projectId != null">project_id,
+            </if>
+            <if test="budgetYear != null">budget_year,
+            </if>
+            <if test="deptId != null">dept_id,
+            </if>
+            <if test="userId != null">user_id,
+            </if>
+            <if test="specification != null">specification,
+            </if>
+            <if test="moneyFrom != null">money_from,
+            </if>
+            <if test="budgetMoney != null">budget_money,
+            </if>
+            <if test="remark != null">remark,
+            </if>
+            <if test="createBy != null">create_by,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="updateBy != null">update_by,
+            </if>
+            <if test="updateTime != null">update_time,
+            </if>
+            <if test="num != null">num,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="projectId != null">#{projectId},
+            </if>
+            <if test="budgetYear != null">#{budgetYear},
+            </if>
+            <if test="deptId != null">#{deptId},
+            </if>
+            <if test="userId != null">#{userId},
+            </if>
+            <if test="specification != null">#{specification},
+            </if>
+            <if test="moneyFrom != null">#{moneyFrom},
+            </if>
+            <if test="budgetMoney != null">#{budgetMoney},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="createBy != null">#{createBy},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="updateBy != null">#{updateBy},
+            </if>
+            <if test="updateTime != null">#{updateTime},
+            </if>
+            <if test="num != null">#{num},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBudget" parameterType="cn.luckyh.purchase.budget.domain.Budget">
+        update budget
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="batchId != null">batch_id =
+                #{batchId},
+            </if>
+            <if test="projectId != null">project_id =
+                #{projectId},
+            </if>
+            <if test="budgetYear != null">budget_year =
+                #{budgetYear},
+            </if>
+            <if test="deptId != null">dept_id =
+                #{deptId},
+            </if>
+            <if test="userId != null">user_id =
+                #{userId},
+            </if>
+            <if test="specification != null">specification =
+                #{specification},
+            </if>
+            <if test="moneyFrom != null">money_from =
+                #{moneyFrom},
+            </if>
+            <if test="budgetMoney != null">budget_money =
+                #{budgetMoney},
+            </if>
+            <if test="remark != null">remark =
+                #{remark},
+            </if>
+            <if test="createBy != null">create_by =
+                #{createBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+            <if test="approveStatus != null">approve_status =
+                #{approveStatus},
+            </if>
+            <if test="num != null">num =
+                #{num},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateBudgetByProcInstId" parameterType="cn.luckyh.purchase.budget.domain.Budget">
+        update budget
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id =
+                #{projectId},
+            </if>
+            <if test="budgetYear != null">budget_year =
+                #{budgetYear},
+            </if>
+            <if test="deptId != null">dept_id =
+                #{deptId},
+            </if>
+            <if test="userId != null">user_id =
+                #{userId},
+            </if>
+            <if test="specification != null">specification =
+                #{specification},
+            </if>
+            <if test="moneyFrom != null">money_from =
+                #{moneyFrom},
+            </if>
+            <if test="budgetMoney != null">budget_money =
+                #{budgetMoney},
+            </if>
+            <if test="remark != null">remark =
+                #{remark},
+            </if>
+            <if test="createdBy != null">created_by =
+                #{createdBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+            <if test="approveStatus != null">approve_status =
+                #{approveStatus},
+            </if>
+            <if test="num != null">num =
+                #{num},
+            </if>
+        </trim>
+        where proc_inst_id = #{procInstId}
+    </update>
+
+    <delete id="deleteBudgetById" parameterType="java.lang.String">
+        delete
+        from budget where id = #{id}
+    </delete>
+
+    <delete id="deleteBudgetByIds" parameterType="java.lang.String">
+        delete from budget where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+
+
+
+    <select id="selectBudgetCollectList" resultType="cn.luckyh.purchase.budget.vo.BudgetCollectVo" parameterType="cn.luckyh.purchase.budget.domain.Budget">
+        select b.budget_year,d.dept_name,d.dept_id,sum(b.budget_money) as budget_money from budget b
+        left join sys_dept d on b.dept_id = d.dept_id
+        where 1=1
+        <if test="budgetYear != null">
+          and b.budget_year =#{budgetYear}
+        </if>
+        <if test="deptId != null">
+          and b.dept_id =#{deptId}
+        </if>
+        group by b.budget_year,b.dept_id
+    </select>
+</mapper>

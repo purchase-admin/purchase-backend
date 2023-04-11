@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.purchase.mapper.PurchaseApplyMapper">
+
+    <resultMap type="cn.luckyh.purchase.purchase.domain.PurchaseApply" id="PurchaseApplyResult">
+        <result property="id" column="id"/>
+        <result property="projectId" column="project_id"/>
+        <result property="budgetYear" column="budget_year"/>
+        <result property="title" column="title"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userPhone" column="user_phone"/>
+        <result property="num" column="num"/>
+        <result property="budgetMoney" column="budget_money"/>
+        <result property="deliveryDay" column="delivery_day"/>
+        <result property="reason" column="reason"/>
+        <result property="specification" column="specification"/>
+        <result property="supplier" column="supplier"/>
+        <result property="supplierUsername" column="supplier_username"/>
+        <result property="supplierPhone" column="supplier_phone"/>
+        <result property="budgetType" column="budget_type"/>
+        <result property="isUrgencyType" column="is_urgency_type"/>
+        <result property="isOk" column="is_ok"/>
+        <result property="purchaseOperator" column="purchase_operator"/>
+        <result property="status" column="status"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectPurchaseApplyVo">
+        select p.*,
+               (select spt.project_type_name from sys_project_type spt where spt.id = p.project_id) as projectName,
+               (select sd.dept_name from sys_dept sd where sd.dept_id = p.dept_id)                  as deptName
+        from purchase_apply p
+    </sql>
+
+    <select id="selectPurchaseApplyList" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApply"
+            resultType="cn.luckyh.purchase.purchase.vo.PurchaseApplyListVo">
+        select p.* ,d.dept_name,u.nick_name as userName ,u.phonenumber as userPhone,
+        (select u1.nick_name from sys_user u1 where u1.user_name = p.create_by) as createBy,
+        (select count(1) from purchase_apply_projects pap where pap.apply_id = p.id ) as projectNum,
+        if(ahp.END_TIME_ IS NULL, sysu.nick_name, '') as assignee,
+        if(ahp.END_TIME_ IS NULL, aht.NAME_, '结束') as taskName
+        from purchase_apply p
+        left join sys_dept d on p.dept_id = d.dept_id
+        left join sys_user u on u.user_name = p.user_id
+        left join (
+        select max(END_TIME_),PROC_INST_ID_,TASK_DEF_KEY_,NAME_,ASSIGNEE_ from act_hi_taskinst aht group by
+        PROC_INST_ID_
+        ) as aht on aht.PROC_INST_ID_=p.proc_id
+        left join sys_user sysu on aht.ASSIGNEE_=sysu.user_name
+        left join act_hi_procinst ahp on aht.PROC_INST_ID_ = ahp.PROC_INST_ID_
+        <where>
+            <if test="projectId != null  and projectId != ''">
+                and project_id = #{projectId}
+            </if>
+            <if test="budgetYear != null  and budgetYear != ''">
+                and budget_year = #{budgetYear}
+            </if>
+            <if test="deptId != null  and deptId != ''">
+                and dept_id = #{deptId}
+            </if>
+            <if test="supplierUsername != null  and supplierUsername != ''">
+                and supplier_username like concat('%', #{supplierUsername}, '%')
+            </if>
+            <if test="supplierPhone != null  and supplierPhone != ''">
+                and supplier_phone = #{supplierPhone}
+            </if>
+            <if test="userPhone !=null and userPhone != ''">
+                and u.phonenumber like concat('%', #{userPhone}, '%')
+            </if>
+            <if test="budgetType != null  and budgetType != ''">
+                and p.budget_type = #{budgetType}
+            </if>
+            <if test="isUrgencyType != null  and isUrgencyType != ''">
+                and p.is_urgency_type = #{isUrgencyType}
+            </if>
+            <if test="isOk != null  and isOk != ''">
+                and is_ok = #{isOk}
+            </if>
+            <if test="status != null  and status != ''">
+                and status = #{status}
+            </if>
+            <if test="userId != null  and userId != ''">
+                and u.user_name = #{userId}
+            </if>
+        </where>
+        order by p.create_time desc
+    </select>
+
+    <select id="selectPurchaseApplyById" parameterType="java.lang.String"
+            resultMap="PurchaseApplyResult">
+        select p.*
+        from purchase_apply p
+        where p.id = #{id}
+    </select>
+
+    <insert id="insertPurchaseApply" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApply">
+        insert into purchase_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="projectId != null">project_id,
+            </if>
+            <if test="title != null">title,
+            </if>
+            <if test="budgetYear != null">budget_year,
+            </if>
+            <if test="deptId != null">dept_id,
+            </if>
+            <if test="userId != null">user_id,
+            </if>
+            <if test="userPhone != null">user_phone,
+            </if>
+            <if test="num != null">num,
+            </if>
+            <if test="budgetMoney != null">budget_money,
+            </if>
+            <if test="deliveryDay != null">delivery_day,
+            </if>
+            <if test="reason != null">reason,
+            </if>
+            <if test="specification != null">specification,
+            </if>
+            <if test="supplier != null">supplier,
+            </if>
+            <if test="supplierUsername != null">supplier_username,
+            </if>
+            <if test="supplierPhone != null">supplier_phone,
+            </if>
+            <if test="budgetType != null">budget_type,
+            </if>
+            <if test="isUrgencyType != null">is_urgency_type,
+            </if>
+            <if test="isOk != null">is_ok,
+            </if>
+            <if test="purchaseOperator != null">purchase_operator,
+            </if>
+            <if test="status != null">status,
+            </if>
+            <if test="createBy != null">create_by,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="updateBy != null">update_by,
+            </if>
+            <if test="updateTime != null">update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="projectId != null">#{projectId},
+            </if>
+            <if test="title != null">#{title},
+            </if>
+            <if test="budgetYear != null">#{budgetYear},
+            </if>
+            <if test="deptId != null">#{deptId},
+            </if>
+            <if test="userId != null">#{userId},
+            </if>
+            <if test="userPhone != null">#{userPhone},
+            </if>
+            <if test="num != null">#{num},
+            </if>
+            <if test="budgetMoney != null">#{budgetMoney},
+            </if>
+            <if test="deliveryDay != null">#{deliveryDay},
+            </if>
+            <if test="reason != null">#{reason},
+            </if>
+            <if test="specification != null">#{specification},
+            </if>
+            <if test="supplier != null">#{supplier},
+            </if>
+            <if test="supplierUsername != null">#{supplierUsername},
+            </if>
+            <if test="supplierPhone != null">#{supplierPhone},
+            </if>
+            <if test="budgetType != null">#{budgetType},
+            </if>
+            <if test="isUrgencyType != null">#{isUrgencyType},
+            </if>
+            <if test="isOk != null">#{isOk},
+            </if>
+            <if test="purchaseOperator != null">#{purchaseOperator},
+            </if>
+            <if test="status != null">#{status},
+            </if>
+            <if test="createBy != null">#{createBy},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="updateBy != null">#{updateBy},
+            </if>
+            <if test="updateTime != null">#{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updatePurchaseApply" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApply">
+        update purchase_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectId != null">project_id =
+                #{projectId},
+            </if>
+            <if test="title != null">title =
+                #{title},
+            </if>
+            <if test="budgetYear != null">budget_year =
+                #{budgetYear},
+            </if>
+            <if test="deptId != null">dept_id =
+                #{deptId},
+            </if>
+            <if test="userId != null">user_id =
+                #{userId},
+            </if>
+            <if test="userPhone != null">user_phone =
+                #{userPhone},
+            </if>
+            <if test="num != null">num =
+                #{num},
+            </if>
+            <if test="budgetMoney != null">budget_money =
+                #{budgetMoney},
+            </if>
+            <if test="deliveryDay != null">delivery_day =
+                #{deliveryDay},
+            </if>
+            <if test="reason != null">reason =
+                #{reason},
+            </if>
+            <if test="specification != null">specification =
+                #{specification},
+            </if>
+            <if test="supplier != null">supplier =
+                #{supplier},
+            </if>
+            <if test="supplierUsername != null">supplier_username =
+                #{supplierUsername},
+            </if>
+            <if test="supplierPhone != null">supplier_phone =
+                #{supplierPhone},
+            </if>
+            <if test="budgetType != null">budget_type =
+                #{budgetType},
+            </if>
+            <if test="isUrgencyType != null">is_urgency_type =
+                #{isUrgencyType},
+            </if>
+            <if test="isOk != null">is_ok =
+                #{isOk},
+            </if>
+            <if test="purchaseOperator != null">purchase_operator =
+                #{purchaseOperator},
+            </if>
+            <if test="status != null">status =
+                #{status},
+            </if>
+            <if test="createBy != null">create_by =
+                #{createBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePurchaseApplyById" parameterType="java.lang.String">
+        delete
+        from purchase_apply
+        where id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseApplyByIds" parameterType="java.lang.String">
+        delete from purchase_apply where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="selectContractProjectList" parameterType="cn.luckyh.purchase.purchase.vo.PurchaseApplyVo"
+            resultType="cn.luckyh.purchase.purchase.vo.PurchaseApplyVo">
+        SELECT
+        pap.project_name as projectName,
+        pap.num as num,
+        pap.reason as reason,
+        pap.budget_cost as budgetCost,
+        pap.specification as specification,
+        s.company_name as supplierName,
+        ip.quotation as quotation
+        FROM
+        purchase_apply pa
+        LEFT JOIN purchase_apply_projects pap ON pa.id = pap.apply_id
+        LEFT JOIN purchase_task pt ON pap.id = pt.project_id
+        LEFT JOIN inquiry_purchase ip ON ip.task_id = pt.id
+        LEFT JOIN supplier s ON ip.supplier = s.id
+        WHERE
+        ip.is_check = '1'
+        <if test="supplier != null and supplier != ''">
+            and ip.supplier = #{supplier}
+        </if>
+    </select>
+</mapper>

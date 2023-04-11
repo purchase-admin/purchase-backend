@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.contract.mapper.ContractMapper">
+
+    <resultMap type="cn.luckyh.purchase.contract.domain.Contract" id="ContractResult">
+        <result property="id" column="id"/>
+        <result property="applyId" column="apply_id"/>
+        <result property="contractName" column="contract_name"/>
+        <result property="secondPartyName" column="second_party_name"/>
+        <result property="money" column="money"/>
+        <result property="contractDate" column="contract_date"/>
+        <result property="contractObject" column="contract_object"/>
+        <result property="remark" column="remark"/>
+        <result property="file" column="file"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectContractVo">
+        select id, apply_id, contract_name, second_party_name, money, contract_date, contract_object, remark, file, create_by, create_time, update_by, update_time        from contract
+    </sql>
+
+    <select id="selectContractList" parameterType="cn.luckyh.purchase.contract.domain.Contract" resultMap="ContractResult">
+        <include refid="selectContractVo"/>
+        <where>
+            <if test="applyId != null  and applyId != ''">
+                and apply_id = #{applyId}
+            </if>
+            <if test="contractName != null  and contractName != ''">
+                and contract_name like concat('%', #{contractName}, '%')
+            </if>
+            <if test="secondPartyName != null  and secondPartyName != ''">
+                and second_party_name like concat('%', #{secondPartyName}, '%')
+            </if>
+            <if test="contractDate != null ">
+                and contract_date = #{contractDate}
+            </if>
+            <if test="contractObject != null  and contractObject != ''">
+                and contract_object like concat('%', #{contractObject}, '%')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectContractById" parameterType="java.lang.String"
+            resultMap="ContractResult">
+        <include refid="selectContractVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertContract" parameterType="cn.luckyh.purchase.contract.domain.Contract">
+        insert into contract
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="applyId != null">apply_id,
+            </if>
+            <if test="contractName != null">contract_name,
+            </if>
+            <if test="secondPartyName != null">second_party_name,
+            </if>
+            <if test="money != null">money,
+            </if>
+            <if test="contractDate != null">contract_date,
+            </if>
+            <if test="contractObject != null">contract_object,
+            </if>
+            <if test="remark != null">remark,
+            </if>
+            <if test="file != null">file,
+            </if>
+            <if test="createBy != null">create_by,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="updateBy != null">update_by,
+            </if>
+            <if test="updateTime != null">update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="applyId != null">#{applyId},
+            </if>
+            <if test="contractName != null">#{contractName},
+            </if>
+            <if test="secondPartyName != null">#{secondPartyName},
+            </if>
+            <if test="money != null">#{money},
+            </if>
+            <if test="contractDate != null">#{contractDate},
+            </if>
+            <if test="contractObject != null">#{contractObject},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+            <if test="file != null">#{file},
+            </if>
+            <if test="createBy != null">#{createBy},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="updateBy != null">#{updateBy},
+            </if>
+            <if test="updateTime != null">#{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateContract" parameterType="cn.luckyh.purchase.contract.domain.Contract">
+        update contract
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applyId != null">apply_id =
+                #{applyId},
+            </if>
+            <if test="contractName != null">contract_name =
+                #{contractName},
+            </if>
+            <if test="secondPartyName != null">second_party_name =
+                #{secondPartyName},
+            </if>
+            <if test="money != null">money =
+                #{money},
+            </if>
+            <if test="contractDate != null">contract_date =
+                #{contractDate},
+            </if>
+            <if test="contractObject != null">contract_object =
+                #{contractObject},
+            </if>
+            <if test="remark != null">remark =
+                #{remark},
+            </if>
+            <if test="file != null">file =
+                #{file},
+            </if>
+            <if test="createBy != null">create_by =
+                #{createBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteContractById" parameterType="java.lang.String">
+        delete
+        from contract where id = #{id}
+    </delete>
+
+    <delete id="deleteContractByIds" parameterType="java.lang.String">
+        delete from contract where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

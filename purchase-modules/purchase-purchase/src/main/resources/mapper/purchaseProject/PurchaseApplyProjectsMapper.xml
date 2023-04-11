@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.purchase.mapper.PurchaseApplyProjectsMapper">
+
+
+    <sql id="selectPurchaseApplyProjectsVo">
+        select id,
+               budget_id,
+               project_name,
+               apply_id,
+               num,
+               budget_cost,
+               delivery_date,
+               reason,
+               specification,
+               supplier,
+               supplier_contact_name,
+               supplier_contact_phone,
+               budget_type,
+               project_id,
+               revision,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from purchase_apply_projects
+    </sql>
+
+    <select id="selectPurchaseApplyProjectsList" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApplyProjects"
+            resultType="cn.luckyh.purchase.purchase.vo.PurchaseApplyProjectsVo">
+        select pap.* from purchase_apply_projects pap
+        left join budget b on pap.project_id = b.id
+        left join sys_project_type spt on b.project_id = spt.id
+        <where>
+            <if test="projectName != null  and projectName != ''">
+                and spt.project_type_name like concat('%', #{projectName}, '%')
+            </if>
+            <if test="applyId != null  and applyId != ''">
+                and pap.apply_id = #{applyId}
+            </if>
+            <if test="deliveryDate != null  and deliveryDate != ''">
+                and pap.delivery_date = #{deliveryDate}
+            </if>
+            <if test="budgetType != null  and budgetType != ''">
+                and pap.budget_type = #{budgetType}
+            </if>
+            <if test="projectId != null  and projectId != ''">
+                and b.project_id = #{projectId}
+            </if>
+            <if test="createBy != null  and createBy != ''">
+                and pap.create_by = #{createBy}
+            </if>
+            <if test="createTime != null ">
+                and pap.create_time = #{createTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectPurchaseApplyProjectsById" parameterType="java.lang.String"
+            resultType="cn.luckyh.purchase.purchase.vo.PurchaseApplyProjectsVo">
+        SELECT pap.*,
+               d.dept_id                                                              as deptId,
+               d.dept_name                                                            AS deptName,
+               u.nick_name                                                            AS userName,
+               u.phonenumber                                                          AS userPhone,
+               t.purchase_type                                                        as purchaseType,
+               t.is_open,
+               (select u1.nick_name from sys_user u1 where u1.user_name = t.executor) as executorName,
+               ips.companyName,
+               ips.companyId,
+               t.id                                                                   as taskId,
+               t.end_time,
+               t.sure_content                                                         as sureContent,
+               t.file1,
+               sfs1.name                                                              as file1Name,
+               t.file2,
+               sfs2.name                                                              as file2Name,
+               t.file3,
+               sfs3.name                                                              as file3Name,
+               t.file3,
+               sfs4.name                                                              as file4Name
+        FROM purchase_apply_projects pap
+                 LEFT JOIN purchase_apply pa ON pap.apply_id = pa.id
+                 left join purchase_task t on t.project_id = pap.id
+                 LEFT JOIN sys_dept d ON pa.dept_id = d.dept_id
+                 LEFT JOIN sys_user u ON u.user_name = pa.user_id
+                 left join (select group_concat(s.company_name) as companyName,
+                                   group_concat(s.id)           as companyId,
+                                   ip.task_id
+                            from inquiry_purchase ip
+                                     left join supplier s on ip.supplier = s.id
+                            group by ip.task_id) ips on t.id = ips.task_id
+                 left join sys_file_storage sfs1 on sfs1.id = t.file1
+                 left join sys_file_storage sfs2 on sfs2.id = t.file2
+                 left join sys_file_storage sfs3 on sfs3.id = t.file3
+                 left join sys_file_storage sfs4 on sfs4.id = t.file4
+        WHERE pap.id = #{id}
+    </select>
+
+    <insert id="insertPurchaseApplyProjects" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApplyProjects">
+        insert into purchase_apply_projects
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="budget_id != null">budget_id,
+            </if>
+            <if test="projectName != null">project_name,
+            </if>
+            <if test="applyId != null">apply_id,
+            </if>
+            <if test="num != null">num,
+            </if>
+            <if test="budgetCost != null">budget_cost,
+            </if>
+            <if test="deliveryDate != null">delivery_date,
+            </if>
+            <if test="reason != null">reason,
+            </if>
+            <if test="specification != null">specification,
+            </if>
+            <if test="supplier != null">supplier,
+            </if>
+            <if test="supplierContactName != null">supplier_contact_name,
+            </if>
+            <if test="supplierContactPhone != null">supplier_contact_phone,
+            </if>
+            <if test="budgetType != null">budget_type,
+            </if>
+            <if test="projectId != null">project_id,
+            </if>
+            <if test="revision != null">revision,
+            </if>
+            <if test="createBy != null">create_by,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="updateBy != null">update_by,
+            </if>
+            <if test="updateTime != null">update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="budget_id != null">#{budgetId},
+            </if>
+            <if test="projectName != null">#{projectName},
+            </if>
+            <if test="applyId != null">#{applyId},
+            </if>
+            <if test="num != null">#{num},
+            </if>
+            <if test="budgetCost != null">#{budgetCost},
+            </if>
+            <if test="deliveryDate != null">#{deliveryDate},
+            </if>
+            <if test="reason != null">#{reason},
+            </if>
+            <if test="specification != null">#{specification},
+            </if>
+            <if test="supplier != null">#{supplier},
+            </if>
+            <if test="supplierContactName != null">#{supplierContactName},
+            </if>
+            <if test="supplierContactPhone != null">#{supplierContactPhone},
+            </if>
+            <if test="budgetType != null">#{budgetType},
+            </if>
+            <if test="projectId != null">#{projectId},
+            </if>
+            <if test="revision != null">#{revision},
+            </if>
+            <if test="createBy != null">#{createBy},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="updateBy != null">#{updateBy},
+            </if>
+            <if test="updateTime != null">#{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updatePurchaseApplyProjects" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApplyProjects">
+        update purchase_apply_projects
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="budgetId != null">
+                budget_id = #{budgetId},
+            </if>
+            <if test="projectName != null">project_name =
+                #{projectName},
+            </if>
+            <if test="applyId != null">apply_id =
+                #{applyId},
+            </if>
+            <if test="num != null">num =
+                #{num},
+            </if>
+            <if test="budgetCost != null">budget_cost =
+                #{budgetCost},
+            </if>
+            <if test="deliveryDate != null">delivery_date =
+                #{deliveryDate},
+            </if>
+            <if test="reason != null">reason =
+                #{reason},
+            </if>
+            <if test="specification != null">specification =
+                #{specification},
+            </if>
+            <if test="supplier != null">supplier =
+                #{supplier},
+            </if>
+            <if test="supplierContactName != null">supplier_contact_name =
+                #{supplierContactName},
+            </if>
+            <if test="supplierContactPhone != null">supplier_contact_phone =
+                #{supplierContactPhone},
+            </if>
+            <if test="budgetType != null">budget_type =
+                #{budgetType},
+            </if>
+            <if test="projectId != null">project_id =
+                #{projectId},
+            </if>
+            <if test="revision != null">revision =
+                #{revision},
+            </if>
+            <if test="createBy != null">create_by =
+                #{createBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePurchaseApplyProjectsById" parameterType="java.lang.String">
+        delete
+        from purchase_apply_projects
+        where id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseApplyProjectsByIds" parameterType="java.lang.String">
+        delete from purchase_apply_projects where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="verifyMoney" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApplyProjects"
+            resultType="java.lang.Integer">
+        SELECT (
+                   SELECT if(sum(budget_cost) is null, 0, sum(budget_cost))
+                   FROM purchase_apply_projects
+                   WHERE project_id = #{projectId}) + ${budgetCost} &lt;= (
+                   SELECT budget_money
+                   FROM budget
+                   WHERE id = #{projectId});
+    </select>
+
+    <select id="verifyNum" parameterType="cn.luckyh.purchase.purchase.domain.PurchaseApplyProjects"
+            resultType="java.lang.Integer">
+        SELECT (SELECT if(sum(num) is null, 0, sum(num)) FROM purchase_apply_projects WHERE project_id = #{projectId}) +
+               ${num} &lt;= (
+                   SELECT IF
+                              (num IS NULL, 0, num)
+                   FROM budget
+                   WHERE id = #{projectId})
+    </select>
+
+
+</mapper>

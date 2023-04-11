@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.budget.mapper.BudgetBatchMapper">
+
+    <resultMap type="cn.luckyh.purchase.budget.domain.BudgetBatch" id="BudgetBatchResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="year" column="year"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectBudgetBatchVo">
+        select t.id,
+               t.title,
+               t.dept_id,
+               t.year,
+               t.status,
+               t.create_by,
+               t.create_time,
+               (select sum(b.budget_money) from budget b where b.batch_id = t.id group by b.batch_id) as totalMoney,
+               (select count(1) from budget b where b.batch_id = t.id)                                as budgetNum
+        from budget_batch t
+    </sql>
+
+    <select id="selectBudgetBatchList" parameterType="cn.luckyh.purchase.budget.domain.BudgetBatch"
+            resultType="cn.luckyh.purchase.budget.vo.BudgetBatchVo">
+        select t.*,d.dept_name as deptName,
+        (select sum(b.budget_money) from budget b where b.batch_id = t.id group by b.batch_id) as totalMoney,
+        (select count(1) from budget b where b.batch_id = t.id) as budgetNum,
+        if(ahp.END_TIME_ IS NULL, sysu.nick_name, '') as assignee,
+        if(ahp.END_TIME_ IS NULL, aht.NAME_, '结束') as taskName
+        from budget_batch t
+        left join sys_dept d on t.dept_id = d.dept_id
+        left join (
+        select max(END_TIME_),PROC_INST_ID_,TASK_DEF_KEY_,NAME_,ASSIGNEE_ from act_hi_taskinst aht group by
+        PROC_INST_ID_
+        ) as aht on aht.PROC_INST_ID_=t.proc_id
+        left join sys_user sysu on aht.ASSIGNEE_=sysu.user_name
+        left join act_hi_procinst ahp on aht.PROC_INST_ID_ = ahp.PROC_INST_ID_
+
+        where 1=1
+        <if test="title != null  and title != ''">
+            and t.title = #{title}
+        </if>
+        <if test="deptId != null  and deptId != ''">
+            and t.dept_id = #{deptId}
+        </if>
+        <if test="year != null  and year != ''">
+            and t.year = #{year}
+        </if>
+        <if test="status != null  and status != ''">
+            and t.status = #{status}
+        </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+        order by create_time desc
+    </select>
+
+    <select id="selectBudgetBatchById" parameterType="java.lang.String"
+            resultMap="BudgetBatchResult">
+        <include refid="selectBudgetBatchVo"/>
+        where id = #{id}
+    </select>
+    <select id="pageSelectByIds" resultType="cn.luckyh.purchase.budget.domain.BudgetBatch">
+        select t.*,
+               d.dept_name                                                                            as deptName,
+               (select sum(b.budget_money) from budget b where b.batch_id = t.id group by b.batch_id) as totalMoney,
+               (select count(1) from budget b where b.batch_id = t.id)                                as budgetNum
+        from budget_batch t
+                 left join sys_dept d on t.dept_id = d.dept_id
+        where id in (#{ids})
+    </select>
+    <select id="selectNotJoinSummaryList" resultType="cn.luckyh.purchase.budget.domain.BudgetBatch">
+        select bb.*,
+        d.dept_name as deptName,
+        (select sum(b.budget_money) from budget b where b.batch_id = bb.id group by b.batch_id) as totalMoney,
+        (select count(1) from budget b where b.batch_id = bb.id) as budgetNum,
+        bsb.*
+        from budget_batch bb
+        left join sys_dept d on bb.dept_id = d.dept_id
+        left join budget_summary_batch bsb ON BSB.batch_id = bb.id
+        where bsb.summary_id is null
+
+        <if test="query.status != null  and query.status != ''">
+            and bb.status = #{query.status}
+        </if>
+        <if test="query.year != null  and query.year != ''">
+            and bb.year = #{query.year}
+        </if>
+        <choose>
+            <when test="query.sort !=null and query .sort!=''">
+                order by ${query.sort} ${query.order}
+            </when>
+            <otherwise>
+                order by bb.create_time desc
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="insertBudgetBatch" parameterType="cn.luckyh.purchase.budget.domain.BudgetBatch">
+        insert into budget_batch
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="title != null">title,
+            </if>
+            <if test="deptId != null">dept_id,
+            </if>
+            <if test="year != null">year,
+            </if>
+            <if test="status != null">status,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="title != null">#{title},
+            </if>
+            <if test="deptId != null">#{deptId},
+            </if>
+            <if test="year != null">#{year},
+            </if>
+            <if test="status != null">#{status},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateBudgetBatch" parameterType="cn.luckyh.purchase.budget.domain.BudgetBatch">
+        update budget_batch
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null">title =
+                #{title},
+            </if>
+            <if test="deptId != null">dept_id =
+                #{deptId},
+            </if>
+            <if test="year != null">year =
+                #{year},
+            </if>
+            <if test="status != null">status =
+                #{status},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBudgetBatchById" parameterType="java.lang.String">
+        delete
+        from budget_batch
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBudgetBatchByIds" parameterType="java.lang.String">
+        delete from budget_batch where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

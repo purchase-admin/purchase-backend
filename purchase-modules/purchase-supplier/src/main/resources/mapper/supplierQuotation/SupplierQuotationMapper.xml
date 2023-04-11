@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.supplier.mapper.SupplierQuotationMapper">
+
+    <resultMap type="cn.luckyh.purchase.supplier.domain.SupplierQuotation" id="SupplierQuotationResult">
+        <result property="id" column="id"/>
+        <result property="supplierId" column="supplier_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="purchaseOffice" column="purchase_office"/>
+        <result property="purchaseContact" column="purchase_contact"/>
+        <result property="purchaseTelephone" column="purchase_telephone"/>
+        <result property="deliveryDate" column="delivery_date"/>
+        <result property="projectName" column="project_name"/>
+        <result property="numbers" column="numbers"/>
+        <result property="projectBudget" column="project_budget"/>
+        <result property="requireContent" column="require_content"/>
+        <result property="purchaseType" column="purchase_type"/>
+        <result property="endDate" column="end_date"/>
+        <result property="productStandard" column="product_standard"/>
+        <result property="productExplain" column="product_explain"/>
+        <result property="supplierDeliveryDate" column="supplier_delivery_date"/>
+        <result property="projectPrice" column="project_price"/>
+        <result property="files" column="files"/>
+        <result property="supplierContactName" column="supplier_contact_name"/>
+        <result property="supplierContactPhone" column="supplier_contact_phone"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectSupplierQuotationVo">
+        select id, supplier_id, task_id, purchase_office, purchase_contact, purchase_telephone, delivery_date, project_name, numbers, project_budget, require_content, purchase_type, end_date, product_standard, product_explain, supplier_delivery_date, project_price, files, supplier_contact_name, supplier_contact_phone, create_by, create_time, update_by, update_time        from supplier_quotation
+    </sql>
+
+    <select id="selectSupplierQuotationList" parameterType="cn.luckyh.purchase.supplier.domain.SupplierQuotation" resultMap="SupplierQuotationResult">
+        <include refid="selectSupplierQuotationVo"/>
+        <where>
+            <if test="supplierId != null  and supplierId != ''">
+                and supplier_id = #{supplierId}
+            </if>
+            <if test="taskId != null  and taskId != ''">
+                and task_id = #{taskId}
+            </if>
+            <if test="purchaseOffice != null  and purchaseOffice != ''">
+                and purchase_office = #{purchaseOffice}
+            </if>
+            <if test="purchaseContact != null  and purchaseContact != ''">
+                and purchase_contact = #{purchaseContact}
+            </if>
+            <if test="purchaseTelephone != null  and purchaseTelephone != ''">
+                and purchase_telephone = #{purchaseTelephone}
+            </if>
+            <if test="deliveryDate != null  and deliveryDate != ''">
+                and delivery_date = #{deliveryDate}
+            </if>
+            <if test="projectName != null  and projectName != ''">
+                and project_name like concat('%', #{projectName}, '%')
+            </if>
+            <if test="numbers != null  and numbers != ''">
+                and numbers = #{numbers}
+            </if>
+            <if test="projectBudget != null  and projectBudget != ''">
+                and project_budget = #{projectBudget}
+            </if>
+            <if test="requireContent != null  and requireContent != ''">
+                and require_content = #{requireContent}
+            </if>
+            <if test="purchaseType != null  and purchaseType != ''">
+                and purchase_type = #{purchaseType}
+            </if>
+            <if test="endDate != null  and endDate != ''">
+                and end_date = #{endDate}
+            </if>
+            <if test="productStandard != null  and productStandard != ''">
+                and product_standard = #{productStandard}
+            </if>
+            <if test="productExplain != null  and productExplain != ''">
+                and product_explain = #{productExplain}
+            </if>
+            <if test="supplierDeliveryDate != null  and supplierDeliveryDate != ''">
+                and supplier_delivery_date = #{supplierDeliveryDate}
+            </if>
+            <if test="projectPrice != null  and projectPrice != ''">
+                and project_price = #{projectPrice}
+            </if>
+            <if test="files != null  and files != ''">
+                and files = #{files}
+            </if>
+            <if test="supplierContactName != null  and supplierContactName != ''">
+                and supplier_contact_name like concat('%', #{supplierContactName}, '%')
+            </if>
+            <if test="supplierContactPhone != null  and supplierContactPhone != ''">
+                and supplier_contact_phone = #{supplierContactPhone}
+            </if>
+            <if test="createBy != null  and createBy != ''">
+                and create_by = #{createBy}
+            </if>
+            <if test="createTime != null ">
+                and create_time = #{createTime}
+            </if>
+            <if test="updateBy != null  and updateBy != ''">
+                and update_by = #{updateBy}
+            </if>
+            <if test="updateTime != null ">
+                and update_time = #{updateTime}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSupplierQuotationById" parameterType="java.lang.String"
+            resultMap="SupplierQuotationResult">
+        <include refid="selectSupplierQuotationVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSupplierQuotation" parameterType="cn.luckyh.purchase.supplier.domain.SupplierQuotation">
+        insert into supplier_quotation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="supplierId != null">supplier_id,
+            </if>
+            <if test="taskId != null">task_id,
+            </if>
+            <if test="purchaseOffice != null">purchase_office,
+            </if>
+            <if test="purchaseContact != null">purchase_contact,
+            </if>
+            <if test="purchaseTelephone != null">purchase_telephone,
+            </if>
+            <if test="deliveryDate != null">delivery_date,
+            </if>
+            <if test="projectName != null">project_name,
+            </if>
+            <if test="numbers != null">numbers,
+            </if>
+            <if test="projectBudget != null">project_budget,
+            </if>
+            <if test="requireContent != null">require_content,
+            </if>
+            <if test="purchaseType != null">purchase_type,
+            </if>
+            <if test="endDate != null">end_date,
+            </if>
+            <if test="productStandard != null">product_standard,
+            </if>
+            <if test="productExplain != null">product_explain,
+            </if>
+            <if test="supplierDeliveryDate != null">supplier_delivery_date,
+            </if>
+            <if test="projectPrice != null">project_price,
+            </if>
+            <if test="files != null">files,
+            </if>
+            <if test="supplierContactName != null">supplier_contact_name,
+            </if>
+            <if test="supplierContactPhone != null">supplier_contact_phone,
+            </if>
+            <if test="createBy != null">create_by,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="updateBy != null">update_by,
+            </if>
+            <if test="updateTime != null">update_time,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="supplierId != null">#{supplierId},
+            </if>
+            <if test="taskId != null">#{taskId},
+            </if>
+            <if test="purchaseOffice != null">#{purchaseOffice},
+            </if>
+            <if test="purchaseContact != null">#{purchaseContact},
+            </if>
+            <if test="purchaseTelephone != null">#{purchaseTelephone},
+            </if>
+            <if test="deliveryDate != null">#{deliveryDate},
+            </if>
+            <if test="projectName != null">#{projectName},
+            </if>
+            <if test="numbers != null">#{numbers},
+            </if>
+            <if test="projectBudget != null">#{projectBudget},
+            </if>
+            <if test="requireContent != null">#{requireContent},
+            </if>
+            <if test="purchaseType != null">#{purchaseType},
+            </if>
+            <if test="endDate != null">#{endDate},
+            </if>
+            <if test="productStandard != null">#{productStandard},
+            </if>
+            <if test="productExplain != null">#{productExplain},
+            </if>
+            <if test="supplierDeliveryDate != null">#{supplierDeliveryDate},
+            </if>
+            <if test="projectPrice != null">#{projectPrice},
+            </if>
+            <if test="files != null">#{files},
+            </if>
+            <if test="supplierContactName != null">#{supplierContactName},
+            </if>
+            <if test="supplierContactPhone != null">#{supplierContactPhone},
+            </if>
+            <if test="createBy != null">#{createBy},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="updateBy != null">#{updateBy},
+            </if>
+            <if test="updateTime != null">#{updateTime},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSupplierQuotation" parameterType="cn.luckyh.purchase.supplier.domain.SupplierQuotation">
+        update supplier_quotation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="supplierId != null">supplier_id =
+                #{supplierId},
+            </if>
+            <if test="taskId != null">task_id =
+                #{taskId},
+            </if>
+            <if test="purchaseOffice != null">purchase_office =
+                #{purchaseOffice},
+            </if>
+            <if test="purchaseContact != null">purchase_contact =
+                #{purchaseContact},
+            </if>
+            <if test="purchaseTelephone != null">purchase_telephone =
+                #{purchaseTelephone},
+            </if>
+            <if test="deliveryDate != null">delivery_date =
+                #{deliveryDate},
+            </if>
+            <if test="projectName != null">project_name =
+                #{projectName},
+            </if>
+            <if test="numbers != null">numbers =
+                #{numbers},
+            </if>
+            <if test="projectBudget != null">project_budget =
+                #{projectBudget},
+            </if>
+            <if test="requireContent != null">require_content =
+                #{requireContent},
+            </if>
+            <if test="purchaseType != null">purchase_type =
+                #{purchaseType},
+            </if>
+            <if test="endDate != null">end_date =
+                #{endDate},
+            </if>
+            <if test="productStandard != null">product_standard =
+                #{productStandard},
+            </if>
+            <if test="productExplain != null">product_explain =
+                #{productExplain},
+            </if>
+            <if test="supplierDeliveryDate != null">supplier_delivery_date =
+                #{supplierDeliveryDate},
+            </if>
+            <if test="projectPrice != null">project_price =
+                #{projectPrice},
+            </if>
+            <if test="files != null">files =
+                #{files},
+            </if>
+            <if test="supplierContactName != null">supplier_contact_name =
+                #{supplierContactName},
+            </if>
+            <if test="supplierContactPhone != null">supplier_contact_phone =
+                #{supplierContactPhone},
+            </if>
+            <if test="createBy != null">create_by =
+                #{createBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSupplierQuotationById" parameterType="java.lang.String">
+        delete
+        from supplier_quotation where id = #{id}
+    </delete>
+
+    <delete id="deleteSupplierQuotationByIds" parameterType="java.lang.String">
+        delete from supplier_quotation where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

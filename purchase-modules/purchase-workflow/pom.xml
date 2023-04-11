@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>purchase-modules</artifactId>
+        <groupId>cn.luckyh</groupId>
+        <version>1.0.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>purchase-workflow</artifactId>
+    <description>工作流模块</description>
+
+    <properties>
+        <maven.compiler.source>8</maven.compiler.source>
+        <maven.compiler.target>8</maven.compiler.target>
+    </properties>
+
+    <dependencies>
+
+        <!--        <dependency>-->
+        <!--            <groupId>org.flowable</groupId>-->
+        <!--            <artifactId>flowable-spring-boot-starter-process</artifactId>-->
+        <!--            &lt;!&ndash;            <artifactId>flowable-spring-boot-starter</artifactId>&ndash;&gt;-->
+        <!--            <version>${flowable.version}</version>-->
+        <!--        </dependency>-->
+
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter-process-rest</artifactId>
+            <!--            <artifactId>flowable-spring-boot-starter-rest</artifactId>-->
+            <version>${flowable.version}</version>
+            <exclusions>
+                <exclusion>
+                        <groupId>org.liquibase</groupId>
+                        <artifactId>liquibase-core</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.liquibase</groupId>
+            <artifactId>liquibase-core</artifactId>
+            <version>4.5.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>ch.qos.logback</groupId>
+                    <artifactId>logback-classic</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.flowable</groupId>-->
+<!--            <artifactId>flowable-form-spring-configurator</artifactId>-->
+<!--            <version>${flowable.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>org.flowable</groupId>-->
+<!--            <artifactId>flowable-form-rest</artifactId>-->
+<!--            <version>${flowable.version}</version>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.slf4j</groupId>-->
+<!--                    <artifactId>slf4j-api</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+        <!--        <dependency>-->
+        <!--            <groupId>org.flowable</groupId>-->
+        <!--            <artifactId>flowable-spring-boot-starter-ui-modeler</artifactId>-->
+        <!--            <version>${flowable.version}</version>-->
+        <!--            <exclusions>-->
+        <!--                <exclusion>-->
+        <!--                    &lt;!&ndash;  官方设计器页面&ndash;&gt;-->
+        <!--                    <groupId>org.flowable</groupId>-->
+        <!--                    <artifactId>flowable-ui-modeler-frontend</artifactId>-->
+        <!--                </exclusion>-->
+        <!--                <exclusion>-->
+        <!--                    <artifactId>joda-time</artifactId>-->
+        <!--                    <groupId>joda-time</groupId>-->
+        <!--                </exclusion>-->
+        <!--            </exclusions>-->
+        <!--        </dependency>-->
+
+    </dependencies>
+</project>

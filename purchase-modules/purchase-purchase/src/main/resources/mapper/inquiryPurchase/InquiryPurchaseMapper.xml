@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.execute.mapper.InquiryPurchaseMapper">
+
+
+    <select id="selectInquiryPurchaseList" parameterType="cn.luckyh.purchase.execute.domain.InquiryPurchase"
+            resultType="cn.luckyh.purchase.execute.vo.InquiryPurchaseVo">
+        select ip.* ,
+        sfs1.name as bjfjName,
+        sfs2.name as swfjName,
+        sfs3.name as jsfjName,
+        s.company_name as supplierName,
+        s.phone,
+        t.is_open
+        from inquiry_purchase ip
+        left join purchase_task t on t.id = ip.task_id
+        left join supplier s on ip.supplier = s.id
+        left join sys_file_storage sfs1 on ip.bjfj = sfs1.id
+        left join sys_file_storage sfs2 on ip.swfj = sfs2.id
+        left join sys_file_storage sfs3 on ip.jsfj = sfs3.id
+        <where>
+            <if test="taskId != null  and taskId != ''">
+                and ip.task_id = #{taskId}
+            </if>
+            <if test="supplier != null  and supplier != ''">
+                and ip.supplier = #{supplier}
+            </if>
+            <if test="quotation != null ">
+                and ip.quotation = #{quotation}
+            </if>
+        </where>
+        and s.company_name is not null
+    </select>
+
+    <select id="selectInquiryPurchaseById" parameterType="java.lang.String"
+            resultType="cn.luckyh.purchase.execute.vo.InquiryPurchaseVo">
+        select ip.*,
+               sfs1.name as bjfjName,
+               sfs2.name as swfjName,
+               sfs3.name as jsfjName
+        from inquiry_purchase ip
+                 left join sys_file_storage sfs1 on ip.bjfj = sfs1.id
+                 left join sys_file_storage sfs2 on ip.swfj = sfs2.id
+                 left join sys_file_storage sfs3 on ip.jsfj = sfs3.id
+        where ip.id = #{id}
+    </select>
+
+    <select id="selectNoticeList" parameterType="java.lang.String" resultType="java.util.Map">
+        SELECT ip.id,
+               (SELECT dept_name FROM sys_dept WHERE dept_id = pa.dept_id)   AS deptName,
+               (SELECT nick_name FROM sys_user WHERE user_name = pa.user_id) AS userName,
+               pa.user_phone                                                 AS userPhone,
+               pap.delivery_date                                             AS deliveryDay,
+               pap.project_name                                              AS projectName,
+               pap.num,
+               pap.specification,
+               pt.purchase_type                                              AS purchaseType,
+               ip.end_time                                                   as endTime
+        FROM purchase_apply_projects pap
+                 LEFT JOIN purchase_apply pa ON pap.apply_id = pa.id
+                 INNER JOIN purchase_task pt ON pap.id = pt.project_id
+                 INNER JOIN inquiry_purchase ip ON pt.id = ip.task_id
+        WHERE ip.is_join IS NULL
+          AND ip.is_check != '1'
+          AND ip.end_time > NOW()
+          AND ip.supplier = #{supplierId}
+    </select>
+
+    <select id="selectOpenNoticeList" resultType="java.util.Map" parameterType="java.lang.String">
+        select * from
+            (SELECT
+                 GROUP_CONCAT( ip.supplier ) AS supplier,
+                 pt.id AS taskId,
+                 ( SELECT dept_name FROM sys_dept WHERE dept_id = pa.dept_id ) AS deptName,
+                 ( SELECT nick_name FROM sys_user WHERE user_name = pa.user_id ) AS userName,
+                 pa.user_phone AS userPhone,
+                 pap.id AS projectId,
+                 pap.delivery_date AS deliveryDay,
+                 pap.project_name AS projectName,
+                 pap.num,
+                 pap.specification,
+                 pt.purchase_type AS purchaseType,
+                 pt.end_time AS endTime,
+                 pt.is_open as isOpen,
+                 GROUP_CONCAT(ip.is_join) as isJoin
+             FROM
+                 purchase_apply_projects pap
+                     LEFT JOIN purchase_apply pa ON pap.apply_id = pa.id
+                     INNER JOIN purchase_task pt ON pap.id = pt.project_id
+                     LEFT JOIN ( SELECT * FROM inquiry_purchase WHERE is_check != '1' ) ip ON pt.id = ip.task_id
+             WHERE
+                 pt.end_time > NOW()
+             group by
+                 pt.id
+             ORDER BY
+                 pt.end_time
+            ) t
+            where supplier is null or
+                (supplier is not null and locate(#{supplierId},supplier)>0)
+    </select>
+    <select id="getOnlyOne" resultType="cn.luckyh.purchase.execute.domain.InquiryPurchase">
+        select *
+        from inquiry_purchase
+        where task_id = #{taskId}
+          and supplier = #{supplierId}
+        limit 1
+    </select>
+    <select id="selectInquiryPurchaseTaskIdAndSupplierId" parameterType="java.lang.String"
+            resultType="cn.luckyh.purchase.execute.domain.InquiryPurchase">
+        select ip.*,
+        sfs1.name as bjfjName,
+        sfs2.name as swfjName,
+        sfs3.name as jsfjName,
+        s.company_name as supplierName,
+        s.phone,
+        t.is_open
+        from inquiry_purchase ip
+        left join purchase_task t on t.id = ip.task_id
+        left join supplier s on ip.supplier = s.id
+        left join sys_file_storage sfs1 on ip.bjfj = sfs1.id
+        left join sys_file_storage sfs2 on ip.swfj = sfs2.id
+        left join sys_file_storage sfs3 on ip.jsfj = sfs3.id
+
+        <where>
+            <if test="taskId != null  and taskId != ''">
+                and ip.task_id = #{taskId}
+            </if>
+            <if test="supplierId != null  and supplierId != ''">
+                and ip.supplier = #{supplierId}
+            </if>
+        </where>
+    </select>
+    <select id="selectOpenNoticeListWithoutLogin" resultType="java.util.Map">
+        SELECT
+            pt.id AS taskId,
+            ( SELECT dept_name FROM sys_dept WHERE dept_id = pa.dept_id ) AS deptName,
+            ( SELECT nick_name FROM sys_user WHERE user_name = pa.user_id ) AS userName,
+            pa.user_phone AS userPhone,
+            pap.id AS projectId,
+            pap.delivery_date AS deliveryDay,
+            pap.project_name AS projectName,
+            pap.num,
+            pap.specification,
+            pt.purchase_type AS purchaseType,
+            pt.end_time AS endTime,
+            pt.is_open as isOpen
+        FROM
+            purchase_apply_projects pap
+                LEFT JOIN purchase_apply pa ON pap.apply_id = pa.id
+                INNER JOIN purchase_task pt ON pap.id = pt.project_id
+        WHERE
+            pt.end_time > NOW() and pt.is_open = 1
+        GROUP BY
+            pt.id
+        ORDER BY
+            pt.end_time
+    </select>
+    <select id="selectIsJoinTaskId" resultType="java.lang.String">
+        select task_id from inquiry_purchase
+        where 1=1
+        <if test="taskIdList.size()>0">
+            and task_id in
+            <foreach collection="taskIdList" item="taskId" open="(" separator="," close=")">
+                #{taskId}
+            </foreach>
+        </if>
+        and supplier = #{supplierId}
+        and is_join = '1'
+    </select>
+
+    <delete id="deleteInquiryPurchaseById" parameterType="java.lang.String">
+        delete
+        from inquiry_purchase
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteInquiryPurchaseByIds" parameterType="java.lang.String">
+        delete from inquiry_purchase where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

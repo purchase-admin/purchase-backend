@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.task.mapper.PurchaseTaskMapper">
+
+
+    <select id="selectPurchaseTaskList" parameterType="cn.luckyh.purchase.task.domain.PurchaseTask"
+            resultType="cn.luckyh.purchase.task.vo.PurchaseTaskVo">
+        select a.* from (
+        SELECT
+        p.id,
+        p.project_name as projectName,
+        (select s.id from sys_project_type s where p.project_name = s.project_type_name) as project_id,
+        p.budget_type,
+        pa.is_urgency_type as isUrgencyType,
+        p.budget_cost,
+        p.delivery_date,
+        p.supplier,
+        pa.dept_id,
+        d.dept_name,
+        u.nick_name as user_name,
+        pa.user_phone,
+        pa.is_ok,
+        t.executor,
+
+        (select su.nick_name from sys_user su where su.user_name = t.executor) as executorName,
+        t.id as taskId,
+        t.purchase_type,
+        t.agency_id,
+        t.is_open,
+        t.end_time,
+        t.file1,
+        sfs1.name as file1Name,
+        t.file2,
+        sfs2.name as file2Name,
+        t.file3,
+        sfs3.name as file3Name,
+        t.file4,
+        sfs4.name as file4Name,
+        if(locate((select group_concat(ip.is_check) from inquiry_purchase ip where ip.task_id =
+        t.id),'1')>0,'已定标','未定标') as isCheck,
+        ( SELECT group_concat( su.company_name ) FROM inquiry_purchase ip
+        LEFT JOIN supplier su ON ip.supplier = su.id
+        WHERE ip.task_id = t.id ) AS joinSupplierNames
+        FROM
+        purchase_apply_projects p
+        LEFT JOIN purchase_apply pa ON p.apply_id = pa.id
+        left join sys_dept d on pa.dept_id = d.dept_id
+        left join sys_user u on pa.user_id = u.user_name
+        left join purchase_task t ON p.id = t.project_id
+        left join sys_file_storage sfs1 ON sfs1.id = t.file1
+        left join sys_file_storage sfs2 ON sfs2.id = t.file2
+        left join sys_file_storage sfs3 ON sfs3.id = t.file3
+        left join sys_file_storage sfs4 ON sfs4.id = t.file4
+        ) a
+        <where>
+            <if test="projectName != null  and projectName != ''">
+                and a.projectName like concat('%', #{projectName}, '%')
+            </if>
+
+            <if test='budgetType != null  and budgetType !="" '>
+                and a.budget_type =#{budgetType}
+            </if>
+            <if test="isUrgencyType !='' and isUrgencyType !=null">
+                and a.isUrgencyType = #{isUrgencyType}
+            </if>
+            <if test='isSaveAgencyData == "0"'>
+                and a.agency_id is null
+            </if>
+            <if test='isSaveAgencyData == "1"'>
+                and a.agency_id is not null
+            </if>
+            <if test="projectId != null  and projectId != ''">
+                and a.project_id = #{projectId}
+            </if>
+            <if test="executor != null  and executor != ''">
+                and a.executor = #{executor}
+            </if>
+            <if test="purchaseType != null  and purchaseType != ''">
+                and a.purchase_type = #{purchaseType}
+            </if>
+            <if test="deptId != null  and deptId != ''">
+                and a.dept_id = #{deptId}
+            </if>
+            <if test="isCheck !=null and isCheck!=''">
+                and a.isCheck = #{isCheck}
+            </if>
+            <if test="isOpen !=null and isOpen!=''">
+                and a.is_open = #{isOpen}
+            </if>
+            <if test='isEnd=="0"'>
+                and a.end_time &gt; now()
+            </if>
+            <if test='isEnd=="1"'>
+                and a.end_time &lt; now()
+            </if>
+            <if test='isEnd=="2"'>
+                and a.delivery_date &gt; now()
+            </if>
+            <if test='isEnd=="3"'>
+                and a.delivery_date &lt; now()
+            </if>
+            <if test='joinSupplierNames=="0"'>
+                and a.joinSupplierNames is null
+            </if>
+            <if test='joinSupplierNames=="1"'>
+                and a.joinSupplierNames is not null
+            </if>
+            and a.is_ok = '1'
+        </where>
+        order by a.end_time
+        <if test='isCheck=="已定标" or isEnd=="2"'>
+            desc
+        </if>
+        <if test='isCheck!="已定标" and isEnd!="2"'>
+            asc
+        </if>
+
+    </select>
+
+
+    <delete id="deletePurchaseTaskById" parameterType="java.lang.String">
+        delete
+        from purchase_task
+        where id = #{id}
+    </delete>
+
+    <delete id="deletePurchaseTaskByIds" parameterType="java.lang.String">
+        delete from purchase_task where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <update id="cancelPurchaseTask" parameterType="java.lang.String">
+        update purchase_task
+        set end_time = null,
+            is_open  = ''
+        where id = #{taskId}
+    </update>
+</mapper>

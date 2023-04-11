@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.system.mapper.SysWechatUserInfoMapper">
+
+    <resultMap type="SysWechatUserInfo" id="SysWechatUserInfoResult">
+        <result property="id" column="id"/>
+        <result property="wechatLoginName" column="wechat_login_name"/>
+        <result property="relationLoginName" column="relation_login_name"/>
+        <result property="procInstId" column="proc_inst_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectSysWechatUserInfoVo">
+        select id, wechat_login_name, relation_login_name, proc_inst_id, create_by, create_time, update_by, update_time, remark        from sys_wechat_user_info
+    </sql>
+
+    <select id="selectSysWechatUserInfoList" parameterType="SysWechatUserInfo" resultMap="SysWechatUserInfoResult">
+        <include refid="selectSysWechatUserInfoVo"/>
+        <where>
+            <if test="wechatLoginName != null  and wechatLoginName != ''">
+                and wechat_login_name like concat('%', #{wechatLoginName}, '%')
+            </if>
+            <if test="relationLoginName != null  and relationLoginName != ''">
+                and relation_login_name like concat('%', #{relationLoginName}, '%')
+            </if>
+            <if test="procInstId != null  and procInstId != ''">
+                and proc_inst_id = #{procInstId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSysWechatUserInfoById" parameterType="java.lang.String"
+            resultMap="SysWechatUserInfoResult">
+        <include refid="selectSysWechatUserInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysWechatUserInfo" parameterType="SysWechatUserInfo">
+        insert into sys_wechat_user_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,
+            </if>
+            <if test="wechatLoginName != null">wechat_login_name,
+            </if>
+            <if test="relationLoginName != null">relation_login_name,
+            </if>
+            <if test="procInstId != null">proc_inst_id,
+            </if>
+            <if test="createBy != null">create_by,
+            </if>
+            <if test="createTime != null">create_time,
+            </if>
+            <if test="updateBy != null">update_by,
+            </if>
+            <if test="updateTime != null">update_time,
+            </if>
+            <if test="remark != null">remark,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},
+            </if>
+            <if test="wechatLoginName != null">#{wechatLoginName},
+            </if>
+            <if test="relationLoginName != null">#{relationLoginName},
+            </if>
+            <if test="procInstId != null">#{procInstId},
+            </if>
+            <if test="createBy != null">#{createBy},
+            </if>
+            <if test="createTime != null">#{createTime},
+            </if>
+            <if test="updateBy != null">#{updateBy},
+            </if>
+            <if test="updateTime != null">#{updateTime},
+            </if>
+            <if test="remark != null">#{remark},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateSysWechatUserInfo" parameterType="SysWechatUserInfo">
+        update sys_wechat_user_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="wechatLoginName != null">wechat_login_name =
+                #{wechatLoginName},
+            </if>
+            <if test="relationLoginName != null">relation_login_name =
+                #{relationLoginName},
+            </if>
+            <if test="procInstId != null">proc_inst_id =
+                #{procInstId},
+            </if>
+            <if test="createBy != null">create_by =
+                #{createBy},
+            </if>
+            <if test="createTime != null">create_time =
+                #{createTime},
+            </if>
+            <if test="updateBy != null">update_by =
+                #{updateBy},
+            </if>
+            <if test="updateTime != null">update_time =
+                #{updateTime},
+            </if>
+            <if test="remark != null">remark =
+                #{remark},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysWechatUserInfoById" parameterType="java.lang.String">
+        delete
+        from sys_wechat_user_info where id = #{id}
+    </delete>
+
+    <delete id="deleteSysWechatUserInfoByIds" parameterType="java.lang.String">
+        delete from sys_wechat_user_info where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

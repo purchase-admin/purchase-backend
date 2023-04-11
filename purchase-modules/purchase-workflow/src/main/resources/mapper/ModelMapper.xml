@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.luckyh.purchase.workflow.mapper.ModelMapper">
+
+
+    <resultMap id="BaseResultMap" type="cn.luckyh.purchase.workflow.vo.model.ModelRestVo">
+        <id property="id" column="ID_" jdbcType="VARCHAR"/>
+        <result property="name" column="NAME_" jdbcType="VARCHAR"/>
+        <result property="key" column="KEY_" jdbcType="VARCHAR"/>
+        <result property="createTime" column="CREATE_TIME_" jdbcType="TIMESTAMP"/>
+        <result property="lastUpdateTime" column="LAST_UPDATE_TIME_" jdbcType="TIMESTAMP"/>
+        <result property="latestVersion" column="REV_" jdbcType="INTEGER"/>
+        <result property="version" column="VERSION_" jdbcType="INTEGER"/>
+        <result property="latestDefinitionId" column="definition_id" jdbcType="VARCHAR"/>
+        <result property="metaInfo" column="META_INFO_" jdbcType="VARCHAR"/>
+        <result property="deploymentId" column="DEPLOYMENT_ID_" jdbcType="VARCHAR"/>
+        <result property="modelResourceId" column="EDITOR_SOURCE_VALUE_ID_" jdbcType="VARCHAR"/>
+        <result property="tenantId" column="TENANT_ID_" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="list" resultType="cn.luckyh.purchase.workflow.vo.model.ModelRestVo" resultMap="BaseResultMap">
+        select arm.ID_,
+               arm.NAME_,
+               arm.KEY_,
+               arm.CREATE_TIME_,
+               arm.LAST_UPDATE_TIME_,
+               arm.REV_,
+               arm.DEPLOYMENT_ID_,
+               arm.EDITOR_SOURCE_VALUE_ID_,
+               ard.ID_,
+               ard.DEPLOY_TIME_,
+               arp.ID_ as definition_id,
+               arp.VERSION_
+        from act_re_model arm
+                 left join act_re_deployment ard on arm.DEPLOYMENT_ID_ = ard.ID_
+                 left join act_re_procdef arp on arp.deployment_id_ = ard.ID_
+        order by LAST_UPDATE_TIME_ desc
+    </select>
+    <select id="listVersions" resultType="cn.luckyh.purchase.workflow.vo.model.ModelRestVo" resultMap="BaseResultMap">
+
+    </select>
+
+</mapper>

@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.luckyh.purchase.supplier.mapper.SupplierMapper">
+
+    <resultMap type="cn.luckyh.purchase.supplier.domain.Supplier" id="SupplierResult">
+        <result property="id" column="id"/>
+        <result property="companyName" column="company_name"/>
+        <result property="corporateRep" column="corporate_rep"/>
+        <result property="companyAddress" column="company_address"/>
+        <result property="postCode" column="post_code"/>
+        <result property="businessContact" column="business_contact"/>
+        <result property="phone" column="phone"/>
+        <result property="email" column="email"/>
+        <result property="website" column="website"/>
+        <result property="establishmentDate" column="establishment_date"/>
+        <result property="registeredCapital" column="registered_capital"/>
+        <result property="nature" column="nature"/>
+        <result property="creditCode" column="credit_code"/>
+        <result property="bankName" column="bank_name"/>
+        <result property="bankAccount" column="bank_account"/>
+        <result property="annualSale" column="annual_sale"/>
+        <result property="employeeNumber" column="employee_number"/>
+        <result property="prefessionalAptitude" column="prefessional_aptitude"/>
+        <result property="setupProof" column="setup_proof"/>
+        <result property="businessScope" column="business_scope"/>
+        <result property="provideProduct" column="provide_product"/>
+        <result property="productionEquipment" column="production_equipment"/>
+        <result property="expensesStandard" column="expenses_standard"/>
+        <result property="settlementModes" column="settlement_modes"/>
+        <result property="pointProject" column="point_project"/>
+        <result property="other" column="other"/>
+        <result property="supplierType" column="supplier_type"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="loginName" column="login_name"/>
+        <result property="openId" column="open_id"/>
+        <result property="isApprove" column="is_approve"/>
+        <result property="isInternal" column="is_internal"/>
+        <result property="yyzz" column="yyzz"/>
+        <result property="khxk" column="khxk"/>
+        <result property="sqwt" column="sqwt"/>
+        <result property="txzs" column="txzs"/>
+        <result property="cpdl" column="cpdl"/>
+
+        <result property="yyzzName" column="yyzzName"/>
+        <result property="khxkName" column="khxkName"/>
+        <result property="sqwtName" column="sqwtName"/>
+        <result property="txzsName" column="txzsName"/>
+        <result property="cpdlName" column="cpdlName"/>
+
+    </resultMap>
+
+
+    <select id="selectSupplierList" parameterType="cn.luckyh.purchase.supplier.domain.Supplier" resultMap="SupplierResult">
+        select DISTINCT s.* ,
+        sfs1.name as yyzzName,
+        sfs2.name as khxkName,
+        sfs3.name as sqwtName,
+        sfs4.name as txzsName,
+        sfs5.name as cpdlName
+        from supplier s
+        left join supplier_project_type spt on s.id = spt.supplier_id
+        left join sys_file_storage sfs1 on s.yyzz = sfs1.id
+        left join sys_file_storage sfs2 on s.khxk = sfs2.id
+        left join sys_file_storage sfs3 on s.sqwt = sfs3.id
+        left join sys_file_storage sfs4 on s.txzs = sfs4.id
+        left join sys_file_storage sfs5 on s.cpdl = sfs5.id
+
+        <where>
+            <if test="projectTypeIds != null">
+                and spt.project_type_id in
+                <foreach collection="projectTypeIds" item="projectTypeId" open="(" separator="," close=")">
+                    #{projectTypeId}
+                </foreach>
+            </if>
+            <if test="companyName != null  and companyName != ''">
+                and company_name like concat('%', #{companyName}, '%')
+            </if>
+            <if test="corporateRep != null  and corporateRep != ''">
+                and corporate_rep like concat('%', #{corporateRep}, '%')
+            </if>
+            <if test="nature != null  and nature != ''">
+                and nature = #{nature}
+            </if>
+            <if test="creditCode != null  and creditCode != ''">
+                and credit_code = #{creditCode}
+            </if>
+            <if test="provideProduct != null  and provideProduct != ''">
+                and provide_product like concat('%', #{provideProduct}, '%')
+            </if>
+            <if test="productionEquipment != null  and productionEquipment != ''">
+                and production_equipment like concat('%', #{productionEquipment}, '%')
+            </if>
+            <if test="settlementModes != null  and settlementModes != ''">
+                and settlement_modes = #{settlementModes}
+            </if>
+            <if test="supplierType != null  and supplierType != ''">
+                and supplier_type like concat('%',#{supplierType}, '%')
+            </if>
+            <if test="loginName != null and loginName !=''">
+                and login_name = #{loginName}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSupplierById" parameterType="java.lang.String"
+            resultMap="SupplierResult">
+        select s.*,
+               sfs1.name as yyzzName,
+               sfs2.name as khxkName,
+               sfs3.name as sqwtName,
+               sfs4.name as txzsName,
+               sfs5.name as cpdlName
+        from supplier s
+                 left join sys_file_storage sfs1 on s.yyzz = sfs1.id
+                 left join sys_file_storage sfs2 on s.khxk = sfs2.id
+                 left join sys_file_storage sfs3 on s.sqwt = sfs3.id
+                 left join sys_file_storage sfs4 on s.txzs = sfs4.id
+                 left join sys_file_storage sfs5 on s.cpdl = sfs5.id
+        where s.id = #{id}
+    </select>
+
+
+    <delete id="deleteSupplierById" parameterType="java.lang.String">
+        delete
+        from supplier
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteSupplierByIds" parameterType="java.lang.String">
+        delete from supplier where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectSupplierJoinList" parameterType="cn.luckyh.purchase.supplier.domain.Supplier"
+            resultType="java.util.Map">
+        SELECT ip.id,
+               ip.quotation,
+               ip.bjfj,
+               ip.swfj,
+               ip.jsfj,
+               sfs1.name                        as bjfjName,
+               sfs2.name                        as swfjName,
+               sfs3.name                        as jsfjName,
+               ip.task_id                       AS taskId,
+               ip.is_check                      as isCheck,
+               t.purchase_type                  as purchaseType,
+               t.end_time                       AS endTime,
+               pap.project_name                 AS projectName,
+               pap.num,
+               pap.delivery_date                AS deliveryDate,
+               pap.specification,
+               pap.budget_cost                  AS budgetCost,
+               u.nick_name                      as userName,
+               u.phoneNumber,
+               if(now() > t.end_time, '1', '0') as isEnd
+        FROM inquiry_purchase ip
+                 inner join purchase_task t ON t.id = ip.task_id
+                 LEFT JOIN purchase_apply_projects pap ON pap.id = t.project_id
+                 left join purchase_apply pa on pap.apply_id = pa.id
+                 left join sys_user u on u.user_name = pa.user_id
+                 left join sys_file_storage sfs1 on ip.bjfj = sfs1.id
+                 left join sys_file_storage sfs2 on ip.swfj = sfs2.id
+                 left join sys_file_storage sfs3 on ip.jsfj = sfs3.id
+        WHERE ip.is_join = '1'
+          AND ip.supplier = #{id}
+    </select>
+
+    <select id="getNoticeInfo" resultType="java.util.Map">
+        SELECT pap.id,
+               pap.budget_id                                                          as budgetId,
+               pap.project_name                                                       as projectName,
+               pap.apply_id                                                           as applyId,
+               pap.num,
+               pap.budget_cost                                                        as budgetCost,
+               pap.delivery_date                                                      as deliveryDate,
+               pap.reason,
+               pap.specification,
+               pap.supplier,
+               pap.supplier_contact_name                                              as supplierContactName,
+               pap.supplier_contact_phone                                             as supplierContactPhone,
+               pap.budget_type                                                        as budgetType,
+               pap.project_id                                                         as projectId,
+               d.dept_id                                                              as deptId,
+               d.dept_name                                                            AS deptName,
+               u.nick_name                                                            AS userName,
+               u.phonenumber                                                          AS userPhone,
+               t.purchase_type                                                        as purchaseType,
+               t.is_open                                                              as isOpen,
+               (select u1.nick_name from sys_user u1 where u1.user_name = t.executor) as executorName,
+               ip.supplier                                                            as companyName,
+               ip.is_join                                                             as isJoin,
+               ip.quotation,
+               ip.bjfj,
+               ip.swfj,
+               ip.jsfj,
+               ip.remark,
+               sfs1.name                                                              as bjfjName,
+               sfs2.name                                                              as swfjName,
+               sfs3.name                                                              as jsfjName,
+               ip.quotation,
+               ip.is_check                                                            as isCheck,
+               t.id                                                                   as taskId,
+               t.end_time                                                             as endTime,
+               if(now() > t.end_time, '1', '0')                                       as isEnd
+        FROM purchase_apply_projects pap
+                 LEFT JOIN purchase_apply pa ON pap.apply_id = pa.id
+                 left join purchase_task t on t.project_id = pap.id
+                 LEFT JOIN sys_dept d ON pa.dept_id = d.dept_id
+                 LEFT JOIN sys_user u ON u.user_name = pa.user_id
+                 left join (select * from inquiry_purchase where supplier = #{supplierId}) ip on t.id = ip.task_id
+                 left join sys_file_storage sfs1 on ip.bjfj = sfs1.id
+                 left join sys_file_storage sfs2 on ip.swfj = sfs2.id
+                 left join sys_file_storage sfs3 on ip.jsfj = sfs3.id
+        WHERE pap.id = #{projectId}
+    </select>
+    <select id="listByOpenId" resultType="cn.luckyh.purchase.supplier.domain.Supplier">
+        select s.*,
+               sfs1.name as yyzzName,
+               sfs2.name as khxkName,
+               sfs3.name as sqwtName,
+               sfs4.name as txzsName,
+               sfs5.name as cpdlName
+        from supplier s
+                 left join sys_file_storage sfs1 on s.yyzz = sfs1.id
+                 left join sys_file_storage sfs2 on s.khxk = sfs2.id
+                 left join sys_file_storage sfs3 on s.sqwt = sfs3.id
+                 left join sys_file_storage sfs4 on s.txzs = sfs4.id
+                 left join sys_file_storage sfs5 on s.cpdl = sfs5.id
+        where s.open_id = #{openId}
+    </select>
+    <select id="selectRelationSupplier" resultType="cn.luckyh.purchase.supplier.domain.Supplier">
+        select DISTINCT s.* ,
+        sfs1.name as yyzzName,
+        sfs2.name as khxkName,
+        sfs3.name as sqwtName,
+        sfs4.name as txzsName,
+        sfs5.name as cpdlName
+        from supplier s
+        left join supplier_project_type spt on s.id = spt.supplier_id
+        left join sys_file_storage sfs1 on s.yyzz = sfs1.id
+        left join sys_file_storage sfs2 on s.khxk = sfs2.id
+        left join sys_file_storage sfs3 on s.sqwt = sfs3.id
+        left join sys_file_storage sfs4 on s.txzs = sfs4.id
+        left join sys_file_storage sfs5 on s.cpdl = sfs5.id
+        where 1=1
+        <if test="name != null  and name != ''">
+            and s.company_name like concat('%', #{name}, '%')
+        </if>
+        <if test="type != null  and type != ''">
+            and supplier_type like concat('%',#{type}, '%')
+        </if>
+        <if test="ids != null">
+            and s.id in
+            <foreach collection="ids" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="projectTypeId != null and projectTypeId != ''">
+            <foreach collection="projectTypeId" item="typeId" open="and (" separator="or" close=")">
+             spt.project_type_id = #{typeId}
+            </foreach>
+        </if>
+
+    </select>
+
+</mapper>
