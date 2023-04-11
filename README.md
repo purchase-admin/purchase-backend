@@ -3,9 +3,9 @@
 
 集成:
 1. mybatis-plus
-2. flowable6.5
+2. flowable 6.8
 
-一个简单的采购系统脚手架,集成了 redis rabbitmq  MyBatis-Plus,Flowable 6.5,支持流程发起 审批,流程各版本间无缝迁移.
+一个简单的采购系统脚手架,集成了 redis rabbitmq  MyBatis-Plus,Flowable 6.8,支持流程发起 审批,流程各版本间无缝迁移.
 
 配合前端项目支持bpmnjs流程设计器,支持导入 Activiti  Flowable  camunda 等标准 bpmn XML
 
